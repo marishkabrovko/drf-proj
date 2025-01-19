@@ -65,4 +65,4 @@ class Payment(models.Model):
         verbose_name_plural = "Платежи"
 
     def __str__(self):
-        return f'{self.user.name} за курс "{self.course.name if self.course else self.lesson.name}"'
+        return f'{self.user.email} за курс "{self.course.name if self.course else self.lesson.name}"'
