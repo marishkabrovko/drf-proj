@@ -10,3 +10,4 @@ flake8==7.1.1
 ipython==8.31.0
 django-filter==24.3
 djangorestframework_simplejwt==5.4.0
+isort==5.13.2
