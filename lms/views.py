@@ -18,10 +18,18 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         return super().get_permissions()
 
+    def perform_create(self, serializer):
+        course = serializer.save(owner=self.request.user)
+        course.save()
+
 
 class LessonCreateView(generics.CreateAPIView):
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, ~IsModerators]
+
+    def perform_create(self, serializer):
+        lesson = serializer.save(owner=self.request.user)
+        lesson.save()
 
 
 class LessonListView(generics.ListAPIView):
