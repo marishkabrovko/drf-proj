@@ -38,3 +38,16 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь", related_name="subscriptions")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="Курс", related_name="subscriptions")
+    date = models.DateField(verbose_name="Дата подписки", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+
+    def __str__(self):
+        return f'Подписка на курс "{self.course.name}"'

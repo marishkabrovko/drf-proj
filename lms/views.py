@@ -1,7 +1,10 @@
 from rest_framework import generics, viewsets
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from lms.models import Course, Lesson
+from lms.models import Course, Lesson, Subscription
 from lms.serializers import CourseSerializer, LessonSerializer
 from users.permissions import IsModerators, IsOwner
 
@@ -54,3 +57,22 @@ class LessonDeleteView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, ~IsModerators | IsOwner]
+
+
+class SubscriptionAPIView(APIView):
+
+    def post(self, request):
+        user_id = request.user.pk
+        course_id = request.data["course"].pk
+        course_item = get_object_or_404(Course, pk=course_id)
+
+        subs_item = course_item.subscriptions.filter(user=user_id)
+
+        if subs_item.exists():
+            Subscription.objects.filter(user=user_id, course=course_id).delete()
+            message = 'Подписка удалена'
+        else:
+            Subscription.objects.create(user=user_id, course=course_id)
+            message = 'Подписка добавлена'
+
+        return Response({"message": message})
