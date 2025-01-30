@@ -64,19 +64,25 @@ class LessonDeleteView(generics.DestroyAPIView):
 
 
 class SubscriptionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        user_id = request.user.pk
-        course_id = request.data["course"].pk
-        course_item = get_object_or_404(Course, pk=course_id)
+        user = request.user  # ✅ Теперь это объект User
+        course_id = request.data.get("course")
 
-        subs_item = course_item.subscriptions.filter(user=user_id)
+        if not course_id:
+            return Response({"error": "Поле 'course' обязательно"}, status=400)
 
-        if subs_item.exists():
-            Subscription.objects.filter(user=user_id, course=course_id).delete()
-            message = 'Подписка удалена'
+        course = get_object_or_404(Course, pk=course_id)  # ✅ Теперь это объект Course
+
+        subscription = Subscription.objects.filter(user=user, course=course)
+
+        if subscription.exists():
+            subscription.delete()
+            message = "Подписка удалена"
         else:
-            Subscription.objects.create(user=user_id, course=course_id)
-            message = 'Подписка добавлена'
+            Subscription.objects.create(user=user, course=course)  # ✅ Передаём объекты
+            message = "Подписка добавлена"
 
-        return Response({"message": message})
+        return Response({"message": message}, status=200)
+
