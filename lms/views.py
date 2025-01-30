@@ -85,4 +85,3 @@ class SubscriptionAPIView(APIView):
             message = "Подписка добавлена"
 
         return Response({"message": message}, status=200)
-

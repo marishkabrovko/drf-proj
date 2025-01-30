@@ -1,7 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from lms.models import Lesson, Course
+
+from lms.models import Course, Lesson
 from users.models import User
 
 
@@ -10,8 +11,9 @@ class LessonTestCase(APITestCase):
     def setUp(self) -> None:
         self.user = User.objects.create(email="test@test.ru")
         self.client.force_authenticate(user=self.user)
-        self.lesson = Lesson.objects.create(name="Lesson", video_link="https://www.youtube.com/lesson/",
-                                            owner=self.user)
+        self.lesson = Lesson.objects.create(
+            name="Lesson", video_link="https://www.youtube.com/lesson/", owner=self.user
+        )
 
     def test_lesson_detail(self):
         url = reverse("lms:lesson", args=(self.lesson.pk,))
@@ -23,7 +25,10 @@ class LessonTestCase(APITestCase):
 
     def test_lesson_create(self):
         url = reverse("lms:create_lesson")
-        data = {"name": "test_lesson", "video_link": "https://www.youtube.com/testlesson/"}
+        data = {
+            "name": "test_lesson",
+            "video_link": "https://www.youtube.com/testlesson/",
+        }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Lesson.objects.all().count(), 2)
@@ -48,7 +53,11 @@ class SubscriptionAPITestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create(email="test@test.ru")
         self.course = Course.objects.create(name="Course")
-        self.lesson = Lesson.objects.create(name="Lesson", video_link="https://www.youtube.com/lesson/", course=self.course)
+        self.lesson = Lesson.objects.create(
+            name="Lesson",
+            video_link="https://www.youtube.com/lesson/",
+            course=self.course,
+        )
         self.client.force_authenticate(user=self.user)
 
     def test_subscribe(self):
