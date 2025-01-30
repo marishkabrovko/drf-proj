@@ -22,7 +22,6 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         course = serializer.save(owner=self.request.user)
-        course.save()
 
 
 class LessonCreateView(generics.CreateAPIView):
@@ -31,7 +30,6 @@ class LessonCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         lesson = serializer.save(owner=self.request.user)
-        lesson.save()
 
 
 class LessonListView(generics.ListAPIView):
