@@ -1,11 +1,14 @@
+import urllib.parse
+
 from rest_framework import serializers
 
 from lms.models import Course, Lesson, Subscription
 from lms.validators import validate_video_link
 
+from .models import Lesson
+
 
 class LessonSerializer(serializers.ModelSerializer):
-
     video_link = serializers.CharField(validators=[validate_video_link])
 
     class Meta:
@@ -22,9 +25,10 @@ class CourseSerializer(serializers.ModelSerializer):
         return obj.lessons.count()
 
     def get_is_subscribed(self, obj):
-        return Subscription.objects.filter(
-            user=self.context["request"].user.pk, cource=obj.pk
-        ).exists()
+        user = self.context["request"].user
+        if not user.is_authenticated:
+            return False
+        return Subscription.objects.filter(user=user, course=obj).exists()
 
     class Meta:
         model = Course

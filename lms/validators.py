@@ -1,9 +1,14 @@
-from rest_framework import serializers
+import urllib.parse
+
+from django.core.exceptions import ValidationError
 
 
 def validate_video_link(value):
-    if not value.startswith("https://www.youtube.com/"):
+    """Разрешает только ссылки на YouTube."""
+    allowed_domains = ["www.youtube.com"]
+    parsed_url = urllib.parse.urlparse(value)
 
-        raise serializers.ValidationError(
-            "Неверная ссылка на видео. Добавьте ссылку на видео с Youtube"
-        )
+    if parsed_url.netloc not in allowed_domains:
+        raise ValidationError(f"Сторонние ресурсы запрещены: {parsed_url.netloc}")
+
+    return value

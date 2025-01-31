@@ -25,13 +25,15 @@ class LessonTestCase(APITestCase):
 
     def test_lesson_create(self):
         url = reverse("lms:create_lesson")
+        course = Course.objects.create(name="Test Course")
         data = {
             "name": "test_lesson",
-            "video_link": "https://www.youtube.com/testlesson/",
+            "video_link": "https://www.youtube.com/testlesson",
+            "course": course.pk,
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Lesson.objects.all().count(), 2)
+        self.assertEqual(Lesson.objects.count(), 2)
 
     def test_lesson_update(self):
         url = reverse("lms:update_lesson", args=(self.lesson.pk,))
