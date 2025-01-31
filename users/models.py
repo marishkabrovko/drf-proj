@@ -49,23 +49,27 @@ class Payment(models.Model):
         verbose_name="Пользователь",
         help_text="Выберите пользователя",
         related_name="payments",
+        blank=True,
+        null=True,
     )
     date = models.DateField(verbose_name="Дата оплаты", auto_now_add=True)
     course = models.ForeignKey(
         Course,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name="Оплаченный курс",
         help_text="Выберите курс",
         blank=True,
         null=True,
+        related_name="payments",
     )
     lesson = models.ForeignKey(
         Lesson,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name="Оплаченный урок",
         help_text="Выберите урок",
         blank=True,
         null=True,
+        related_name="payments",
     )
     amount = models.PositiveIntegerField(
         verbose_name="Сумма оплаты", help_text="Введите сумму оплаты"
@@ -80,11 +84,16 @@ class Payment(models.Model):
         max_length=50,
         verbose_name="Способ оплаты",
         help_text="Выберите способ оплаты",
+        default="transfer_to_account",
     )
+    session_id = models.CharField(max_length=255, verbose_name="ID сессии", help_text="Введите ID сессии", blank=True,
+                                  null=True)
+    link = models.URLField(max_length=400, verbose_name="Ссылка на оплату", help_text="Добавьте ссылку на оплату",
+                           blank=True, null=True)
 
     class Meta:
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
 
     def __str__(self):
-        return f'{self.user.email} за курс "{self.course.name if self.course else self.lesson.name}"'
+        return f'{self.user.email} за "{self.course.name if self.course else self.lesson.name}"'
