@@ -14,3 +14,7 @@ isort==5.13.2
 coverage==7.6.10
 stripe==11.5.0
 drf-yasg==1.21.8
+redis==5.2.1
+celery==5.4.0
+django-celery-beat==2.7.0
+eventlet==0.39.0

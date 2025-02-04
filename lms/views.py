@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from lms.tasks import send_mail_about_update_course
 from lms.models import Course, Lesson, Subscription
 from lms.paginators import LessonCoursePagination
 from lms.serializers import CourseSerializer, LessonSerializer
@@ -27,6 +28,10 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         course = serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        send_mail_about_update_course.delay(course_id=course.pk)
 
 
 class LessonCreateView(generics.CreateAPIView):
@@ -67,13 +72,13 @@ class SubscriptionAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        user = request.user  # ✅ Теперь это объект User
+        user = request.user
         course_id = request.data.get("course")
 
         if not course_id:
             return Response({"error": "Поле 'course' обязательно"}, status=400)
 
-        course = get_object_or_404(Course, pk=course_id)  # ✅ Теперь это объект Course
+        course = get_object_or_404(Course, pk=course_id)
 
         subscription = Subscription.objects.filter(user=user, course=course)
 
@@ -81,7 +86,7 @@ class SubscriptionAPIView(APIView):
             subscription.delete()
             message = "Подписка удалена"
         else:
-            Subscription.objects.create(user=user, course=course)  # ✅ Передаём объекты
+            Subscription.objects.create(user=user, course=course)
             message = "Подписка добавлена"
 
         return Response({"message": message}, status=200)
