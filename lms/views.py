@@ -4,10 +4,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from lms.tasks import send_mail_about_update_course
 from lms.models import Course, Lesson, Subscription
 from lms.paginators import LessonCoursePagination
 from lms.serializers import CourseSerializer, LessonSerializer
+from lms.tasks import send_mail_about_update_course
 from users.permissions import IsModerators, IsOwner
 
 
