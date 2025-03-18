@@ -11,6 +11,9 @@ services:
       db:
         condition: service_healthy
 
+    env_file:
+      - .env
+
   nginx:
     build:
       context: ./nginx
