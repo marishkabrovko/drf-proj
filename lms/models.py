@@ -56,6 +56,7 @@ class Lesson(models.Model):
         null=True,
     )
     video_link = models.CharField(
+        max_length=255,
         verbose_name="Ссылка на урок", help_text="Добавьте ссылку на урок"
     )
     course = models.ForeignKey(
